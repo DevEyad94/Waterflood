@@ -1,0 +1,58 @@
+[
+  {
+    "RuleCode": "RULE_HIGH_WATER_CUT",
+    "Name": "High Water Cut",
+    "Description": "Producer water cut exceeds defined threshold",
+    "TargetWellType": "PROD",
+    "DefaultThresholdValue": 80.0,
+    "Severity": "Warning"
+  },
+  {
+    "RuleCode": "RULE_LOW_OIL_PROD",
+    "Name": "Low Oil Production",
+    "Description": "Oil production falls below defined threshold",
+    "TargetWellType": "PROD",
+    "DefaultThresholdValue": 500.0,
+    "Severity": "Warning"
+  },
+  {
+    "RuleCode": "RULE_COMBINED_DEFICIT",
+    "Name": "Combined Production Deficit",
+    "Description": "High water cut combined with low oil production",
+    "TargetWellType": "PROD",
+    "DefaultThresholdValue": 0.0,
+    "Severity": "Critical"
+  },
+  {
+    "RuleCode": "RULE_LOW_INJECTION",
+    "Name": "Low Injection Rate",
+    "Description": "Injector falls below target injection rate",
+    "TargetWellType": "INJ",
+    "DefaultThresholdValue": 1000.0,
+    "Severity": "Warning"
+  },
+  {
+    "RuleCode": "RULE_HIGH_PRESSURE",
+    "Name": "High Injection Pressure",
+    "Description": "Injection pressure exceeds maximum allowed",
+    "TargetWellType": "INJ",
+    "DefaultThresholdValue": 2500.0,
+    "Severity": "Critical"
+  },
+  {
+    "RuleCode": "RULE_INACTIVE_WELL",
+    "Name": "Inactive Well",
+    "Description": "Well is shut-in or under maintenance",
+    "TargetWellType": "ANY",
+    "DefaultThresholdValue": 0.0,
+    "Severity": "Notice"
+  },
+  {
+    "RuleCode": "RULE_PRODUCTION_DECLINE",
+    "Name": "Production Decline",
+    "Description": "Significant decrease in oil production compared with previous measurements",
+    "TargetWellType": "PROD",
+    "DefaultThresholdValue": 20.0,
+    "Severity": "Warning"
+  }
+]

@@ -1,0 +1,129 @@
+<div class="p-6 space-y-4">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Waterflood Well Data Management</h1>
+    <div class="flex gap-2">
+      <button (click)="exportData('csv')" class="px-4 py-2 border rounded hover:bg-gray-50">Export CSV</button>
+      <button (click)="exportData('excel')" class="px-4 py-2 border rounded hover:bg-gray-50">Export Excel</button>
+      <button *appHasRole="[role.ADMIN]" (click)="openCreateForm()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Well</button>
+    </div>
+  </div>
+
+  <form [formGroup]="filterForm" class="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-3">
+    <div class="flex flex-wrap gap-3">
+      <input formControlName="search" placeholder="Search wells..." class="border rounded px-3 py-2" />
+      <select formControlName="fieldName" class="border rounded px-3 py-2">
+        <option [ngValue]="null">All Waterflood Fields</option>
+        <option *ngFor="let f of fieldOptions" [value]="f.value">{{ f.label }}</option>
+      </select>
+      <select formControlName="wellTypeCode" class="border rounded px-3 py-2">
+        <option [ngValue]="null">All Types</option>
+        <option *ngFor="let t of wellTypeOptions" [value]="t.value">{{ t.label }}</option>
+      </select>
+      <select formControlName="wellStatusCode" class="border rounded px-3 py-2">
+        <option [ngValue]="null">All Statuses</option>
+        <option *ngFor="let s of wellStatusOptions" [value]="s.value">{{ s.label }}</option>
+      </select>
+      <input type="date" formControlName="fromDate" class="border rounded px-3 py-2" />
+      <input type="date" formControlName="toDate" class="border rounded px-3 py-2" />
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <input type="number" formControlName="minInjectionRate" placeholder="Inj. rate ≥" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="maxInjectionRate" placeholder="Inj. rate ≤" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="minOilProductionRate" placeholder="Oil prod. ≥" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="maxOilProductionRate" placeholder="Oil prod. ≤" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="minWaterCut" placeholder="Water cut ≥" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="maxWaterCut" placeholder="Water cut ≤" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="minInjectionPressure" placeholder="Pressure ≥" class="border rounded px-3 py-2 w-36" />
+      <input type="number" formControlName="maxInjectionPressure" placeholder="Pressure ≤" class="border rounded px-3 py-2 w-36" />
+      <button type="button" (click)="applyFilter()" class="px-4 py-2 bg-gray-600 text-white rounded">Filter</button>
+    </div>
+  </form>
+
+  <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded shadow">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left cursor-pointer" (click)="onSort('wellName')">Well Name</th>
+          <th class="px-4 py-2 text-left">Type</th>
+          <th class="px-4 py-2 text-left">Waterflood Field</th>
+          <th class="px-4 py-2 text-right cursor-pointer" (click)="onSort('injectionRate')">Injection</th>
+          <th class="px-4 py-2 text-right">Inj. Pressure</th>
+          <th class="px-4 py-2 text-right cursor-pointer" (click)="onSort('oilProductionRate')">Oil Prod.</th>
+          <th class="px-4 py-2 text-right">Water Prod.</th>
+          <th class="px-4 py-2 text-right">Water Cut</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Measured</th>
+          <th class="px-4 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of records" class="border-t hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-4 py-2">
+            {{ r.wellName }}
+            <span *ngIf="r.requiresAttention" class="ml-1 text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Alert</span>
+          </td>
+          <td class="px-4 py-2">{{ r.wellTypeName }}</td>
+          <td class="px-4 py-2">{{ r.fieldName }}</td>
+          <td class="px-4 py-2 text-right">{{ r.injectionRate ?? '-' }}</td>
+          <td class="px-4 py-2 text-right">{{ r.injectionPressure ?? '-' }}</td>
+          <td class="px-4 py-2 text-right">{{ r.oilProductionRate ?? '-' }}</td>
+          <td class="px-4 py-2 text-right">{{ r.waterProductionRate ?? '-' }}</td>
+          <td class="px-4 py-2 text-right">{{ r.waterCut != null ? r.waterCut + '%' : '-' }}</td>
+          <td class="px-4 py-2">
+            <span [zskStatusBadge]="r.wellStatusCode" [zskReference]="zskReference"></span>
+          </td>
+          <td class="px-4 py-2">{{ r.measurementDate | date:'mediumDate' }}</td>
+          <td class="px-4 py-2 space-x-2">
+            <button *appHasRole="[role.ADMIN, role.PETROLEUM_ENGINEER, role.OPERATOR]" (click)="openEditForm(r)" class="text-blue-600 hover:underline">Edit</button>
+            <button *appHasRole="[role.ADMIN]" (click)="deleteRecord(r.id)" class="text-red-600 hover:underline">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="isLoading" class="p-4 text-center text-gray-500">Loading...</div>
+  </div>
+
+  <div class="flex justify-between items-center" *ngIf="pagination.totalPages > 1">
+    <span>Page {{ pagination.currentPage }} of {{ pagination.totalPages }}</span>
+    <div class="space-x-2">
+      <button [disabled]="pagination.currentPage <= 1" (click)="onPageChange(pagination.currentPage - 1)" class="px-3 py-1 border rounded">Prev</button>
+      <button [disabled]="pagination.currentPage >= pagination.totalPages" (click)="onPageChange(pagination.currentPage + 1)" class="px-3 py-1 border rounded">Next</button>
+    </div>
+  </div>
+
+  <div *ngIf="isFormVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <form [formGroup]="recordForm" (ngSubmit)="submitForm()" class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <h2 class="text-xl font-bold mb-4">{{ isEditMode ? 'Edit' : 'Create' }} Waterflood Well Record</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-sm">Well Name</label><input formControlName="wellName" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Well Type</label>
+          <select formControlName="wellTypeCode" class="w-full border rounded px-3 py-2">
+            <option *ngFor="let t of wellTypeOptions" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+        <div><label class="text-sm">Waterflood Field</label>
+          <select formControlName="fieldName" class="w-full border rounded px-3 py-2">
+            <option *ngFor="let f of fieldOptions" [value]="f.value">{{ f.label }}</option>
+          </select>
+        </div>
+        <div><label class="text-sm">Status</label>
+          <select formControlName="wellStatusCode" class="w-full border rounded px-3 py-2">
+            <option *ngFor="let s of wellStatusOptions" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+        <div><label class="text-sm">Latitude</label><input type="number" formControlName="latitude" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Longitude</label><input type="number" formControlName="longitude" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Injection Rate (bbl/d)</label><input type="number" formControlName="injectionRate" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Injection Pressure (psi)</label><input type="number" formControlName="injectionPressure" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Oil Production (bbl/d)</label><input type="number" formControlName="oilProductionRate" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Water Production (bbl/d)</label><input type="number" formControlName="waterProductionRate" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Water Cut (%)</label><input type="number" formControlName="waterCut" class="w-full border rounded px-3 py-2" /></div>
+        <div><label class="text-sm">Measurement Date</label><input type="date" formControlName="measurementDate" class="w-full border rounded px-3 py-2" /></div>
+      </div>
+      <div class="flex justify-end gap-2 mt-6">
+        <button type="button" (click)="closeForm()" class="px-4 py-2 border rounded">Cancel</button>
+        <button type="submit" [disabled]="recordForm.invalid || isSubmitting" class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

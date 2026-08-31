@@ -1,0 +1,18 @@
+Commands Used
+
+dotnet ef database update
+
+dotnet ef migrations add <MigrationName>
+
+dotnet watch run
+
+dotnet publish -c Release -r linux-x64 --self-contained true
+
+dotnet publish -c Release -r linux-x64 --self-contained true /p:Environment=Production
+
+
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Port=5432;Database=WaterDB;User Id=postgres;Password=eyad1994;"
+
+dotnet user-secrets remove "ConnectionStrings:DefaultConnection"
+
+dotnet user-secrets list

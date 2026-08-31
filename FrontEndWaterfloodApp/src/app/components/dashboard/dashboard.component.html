@@ -1,0 +1,116 @@
+<div class="p-6 space-y-6">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Waterflood Dashboard</h1>
+
+  <form [formGroup]="filterForm" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <app-zsk-select formControlName="fieldName" [options]="fieldOptions" label="Waterflood Field" placeholder="All Fields"></app-zsk-select>
+      <app-zsk-select formControlName="wellTypeCode" [options]="wellTypeOptions" label="Well Type" placeholder="All Types"></app-zsk-select>
+      <app-zsk-select formControlName="wellStatusCode" [options]="wellStatusOptions" label="Status" placeholder="All Statuses"></app-zsk-select>
+      <div>
+        <label class="block text-sm font-medium mb-1">From Date</label>
+        <input type="date" formControlName="fromDate" class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">To Date</label>
+        <input type="date" formControlName="toDate" class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+      <div>
+        <label class="block text-xs mb-1">Inj. Rate ≥</label>
+        <input type="number" formControlName="minInjectionRate" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Inj. Rate ≤</label>
+        <input type="number" formControlName="maxInjectionRate" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Oil Prod. ≥</label>
+        <input type="number" formControlName="minOilProductionRate" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Oil Prod. ≤</label>
+        <input type="number" formControlName="maxOilProductionRate" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Water Cut ≥</label>
+        <input type="number" formControlName="minWaterCut" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Water Cut ≤</label>
+        <input type="number" formControlName="maxWaterCut" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Inj. Pressure ≥</label>
+        <input type="number" formControlName="minInjectionPressure" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+      <div>
+        <label class="block text-xs mb-1">Inj. Pressure ≤</label>
+        <input type="number" formControlName="maxInjectionPressure" class="w-full border rounded px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600" />
+      </div>
+    </div>
+    <button type="button" (click)="resetFilters()" class="px-3 py-1 text-sm border rounded">Reset Filters</button>
+  </form>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4" *ngIf="kpi">
+    <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Total Injection</p>
+      <p class="text-xl font-bold">{{ kpi.totalInjectionRate | number:'1.0-0' }} bbl/d</p>
+    </div>
+    <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Total Oil Production</p>
+      <p class="text-xl font-bold">{{ kpi.totalOilProductionRate | number:'1.0-0' }} bbl/d</p>
+    </div>
+    <div class="bg-cyan-50 dark:bg-cyan-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Produced Water</p>
+      <p class="text-xl font-bold">{{ kpi.totalWaterProductionRate | number:'1.0-0' }} bbl/d</p>
+    </div>
+    <div class="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Avg Water Cut</p>
+      <p class="text-xl font-bold">{{ kpi.averageWaterCut }}%</p>
+    </div>
+    <div class="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Active Injectors</p>
+      <p class="text-xl font-bold">{{ kpi.activeInjectorCount }}</p>
+    </div>
+    <div class="bg-teal-50 dark:bg-teal-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Active Producers</p>
+      <p class="text-xl font-bold">{{ kpi.activeProducerCount }}</p>
+    </div>
+    <div class="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Injection Efficiency</p>
+      <p class="text-xl font-bold">{{ kpi.injectionEfficiencyPercent }}%</p>
+    </div>
+    <div class="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg">
+      <p class="text-sm text-gray-500">Needs Attention</p>
+      <p class="text-xl font-bold text-red-600">{{ kpi.wellsRequiringAttention }}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Injection vs Oil Production</h3>
+      <div echarts [options]="injectionVsOilChart" class="h-72"></div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Water Cut Trend</h3>
+      <div echarts [options]="waterCutChart" class="h-72"></div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Injection Pressure Trend</h3>
+      <div echarts [options]="pressureChart" class="h-72"></div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Well Status Distribution</h3>
+      <div echarts [options]="statusChart" class="h-72"></div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Injection Rate by Well</h3>
+      <div echarts [options]="injectionByWellChart" class="h-72"></div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Oil Production Rate by Well</h3>
+      <div echarts [options]="oilByWellChart" class="h-72"></div>
+    </div>
+  </div>
+</div>

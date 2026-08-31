@@ -1,0 +1,4 @@
+[
+  { "Code": "INJ", "Name": "Injector", "Description": "Water injection well" },
+  { "Code": "PROD", "Name": "Producer", "Description": "Fluid production well" }
+]

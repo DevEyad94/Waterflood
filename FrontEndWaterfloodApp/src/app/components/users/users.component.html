@@ -1,0 +1,60 @@
+<div class="p-6 space-y-4">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold">User Management</h1>
+    <button (click)="openCreateForm()" class="px-4 py-2 bg-blue-600 text-white rounded">Add User</button>
+  </div>
+
+  <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded shadow">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-50 dark:bg-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left">Username</th>
+          <th class="px-4 py-2 text-left">Full Name</th>
+          <th class="px-4 py-2 text-left">Role</th>
+          <th class="px-4 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" class="border-t">
+          <td class="px-4 py-2">{{ user.username }}</td>
+          <td class="px-4 py-2">{{ user.fullName }}</td>
+          <td class="px-4 py-2">{{ roleLabel(user) }}</td>
+          <td class="px-4 py-2">
+            <button (click)="openEditForm(user)" class="text-blue-600 hover:underline">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="isFormVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">{{ isEditMode ? 'Edit User' : 'Create User' }}</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="text-sm">Username</label>
+          <input formControlName="username" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm">Full Name</label>
+          <input formControlName="fullName" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm">{{ isEditMode ? 'New Password (optional)' : 'Password' }}</label>
+          <input type="password" formControlName="passwordHash" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm">Role</label>
+          <select formControlName="zRoleId" class="w-full border rounded px-3 py-2">
+            <option [ngValue]="null">Select role</option>
+            <option *ngFor="let role of roles" [ngValue]="role.zRoleId">{{ role.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4">
+        <button type="button" (click)="closeForm()" class="px-4 py-2 border rounded">Cancel</button>
+        <button type="submit" [disabled]="userForm.invalid || isSubmitting" class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

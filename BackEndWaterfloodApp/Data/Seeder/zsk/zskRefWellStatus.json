@@ -1,0 +1,5 @@
+[
+  { "Code": "ACT", "Name": "Active", "Description": "Well is actively operating", "ColorCode": "#28a745" },
+  { "Code": "SHT", "Name": "Shut-in", "Description": "Well is temporarily shut in", "ColorCode": "#dc3545" },
+  { "Code": "MNT", "Name": "Maintenance", "Description": "Well is under maintenance", "ColorCode": "#ffc107" }
+]

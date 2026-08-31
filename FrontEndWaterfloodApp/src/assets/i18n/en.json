@@ -1,0 +1,107 @@
+{
+  "APP": {
+    "TITLE": "Gas Production System - PDO",
+    "UNAUTHORIZED": "Unauthorized Access"
+  },
+  "MENU": {
+    "SEARCH": "Search",
+    "LOGIN": "Log in",
+    "LOGOUT": "Log out",
+    "LANGUAGE": "Language",
+    "DARK_MODE": "Dark Mode",
+    "LIGHT_MODE": "Light Mode",
+    "MANAGEMENT": "Management",
+    "STORY": "Story"
+  },
+  "FILTER": {
+    "RESET": "Reset",
+    "APPLY": "Apply"
+  },
+  "LOGIN": {
+    "TITLE": "Sign in to your account",
+    "USERNAME": "Username",
+    "USERNAME_PLACEHOLDER": "Enter your username",
+    "USERNAME_REQUIRED": "Username is required",
+    "EMAIL": "Email address",
+    "EMAIL_PLACEHOLDER": "Enter your email",
+    "EMAIL_REQUIRED": "Email is required",
+    "EMAIL_INVALID": "Please enter a valid email",
+    "PASSWORD": "Password",
+    "PASSWORD_PLACEHOLDER": "Enter your password",
+    "PASSWORD_REQUIRED": "Password is required",
+    "PASSWORD_LENGTH": "Password must be at least 6 characters",
+    "BUTTON": "Sign in",
+    "REGISTER": "Create an account",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "NOT_A_MEMBER": "Not a member?",
+    "REMEMBER_ME": "Remember me"
+  },
+  "FEATURE": {
+    "EXPORT": "Export Data",
+    "EXPORT_DESC": "Export grave records to CSV or PDF format for reporting and analysis.",
+    "BACKUP": "Backup System",
+    "BACKUP_DESC": "Automated backup for all grave records ensuring data is never lost.",
+    "ANALYTICS": "Analytics Dashboard",
+    "ANALYTICS_DESC": "View statistics and trends about cemetery occupancy and demographics.",
+    "LEARN_MORE": "Learn More"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "MIN_LENGTH": "Minimum {{requiredLength}} characters required",
+    "MAX_LENGTH": "Maximum {{requiredLength}} characters exceeded",
+    "PATTERN": "Invalid format",
+    "EMAIL": "Invalid email address",
+    "PASSWORDS_NOT_MATCH": "Passwords do not match"
+  },
+  "DATE_PICKER": {
+    "TODAY": "Today",
+    "CLEAR": "Clear",
+    "SELECT_DATE": "Select date",
+    "SELECT_MONTH_YEAR": "Select month and year",
+    "CURRENT_MONTH": "Current month",
+    "DAYS": {
+      "SUNDAY": "Su",
+      "MONDAY": "Mo",
+      "TUESDAY": "Tu",
+      "WEDNESDAY": "We",
+      "THURSDAY": "Th",
+      "FRIDAY": "Fr",
+      "SATURDAY": "Sa"
+    },
+    "MONTHS": {
+      "JANUARY": "January",
+      "FEBRUARY": "February",
+      "MARCH": "March",
+      "APRIL": "April",
+      "MAY": "May",
+      "JUNE": "June",
+      "JULY": "July",
+      "AUGUST": "August",
+      "SEPTEMBER": "September",
+      "OCTOBER": "October",
+      "NOVEMBER": "November",
+      "DECEMBER": "December"
+    }
+  },
+  "COMMON": {
+    "SUCCESS": "Success",
+    "ERROR": "Error",
+    "WARNING": "Warning",
+    "INFO": "Information",
+    "CANCEL": "Cancel"
+  },
+  "UNAUTHORIZED": {
+    "TITLE": "Unauthorized Access",
+    "MESSAGE": "You don't have permission to access this page. Please log in with appropriate credentials or contact an administrator.",
+    "GO_HOME": "Go to Home",
+    "LOGIN": "Log in"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© 2026 PDO Waterflood Performance Management System. All rights reserved.",
+    "TAGLINE": "Enabling our people to realise their full potential by creating an inclusive, supportive and collaborative learning environment.",
+    "PRIVACY": "Privacy Policy",
+    "TERMS": "Terms of Service",
+    "CONTACT": "Contact Us",
+    "DESIGNED_WITH": "Designed by Eyad Al-Hamza"
+  }
+}

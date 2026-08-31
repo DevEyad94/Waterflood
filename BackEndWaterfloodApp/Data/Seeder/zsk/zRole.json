@@ -1,0 +1,14 @@
+[
+  {
+    "zRoleID": 1,
+    "Name": "Admin"
+  },
+  {
+    "zRoleID": 2,
+    "Name": "Operator"
+  },
+  {
+    "zRoleID": 3,
+    "Name": "PetroleumEngineer"
+  }
+]

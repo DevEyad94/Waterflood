@@ -1,0 +1,71 @@
+<div class="p-6 space-y-6">
+  <h1 class="text-2xl font-bold">Performance Monitoring & Alerts</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-4">
+      <h2 class="text-lg font-semibold">Wells Requiring Attention ({{ alerts.length }})</h2>
+      <div *ngFor="let alert of alerts" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-bold text-lg">{{ alert.wellName }}
+              <span class="text-xs bg-red-600 text-white px-2 py-0.5 rounded ml-2">Requires Attention</span>
+            </h3>
+            <p class="text-sm text-gray-600">{{ alert.fieldName }} · {{ alert.wellTypeName }} · {{ alert.wellStatusName }}</p>
+          </div>
+          <div class="text-right text-sm">
+            <p *ngIf="alert.injectionRate">Inj: {{ alert.injectionRate }} bbl/d</p>
+            <p *ngIf="alert.oilProductionRate">Oil: {{ alert.oilProductionRate }} bbl/d</p>
+            <p *ngIf="alert.waterCut != null">WC: {{ alert.waterCut }}%</p>
+          </div>
+        </div>
+        <ul class="mt-2 text-sm text-red-700 dark:text-red-300 list-disc list-inside">
+          <li *ngFor="let a of alert.alerts">
+            <span class="font-mono text-xs">{{ a.ruleIdentifier }}</span>
+            <span class="ml-1 text-xs px-1 rounded" [class]="a.alertStatus === 'Critical' ? 'bg-red-200' : a.alertStatus === 'Warning' ? 'bg-amber-200' : 'bg-gray-200'">{{ a.alertStatus }}</span>
+            — {{ a.message }}
+          </li>
+        </ul>
+      </div>
+      <p *ngIf="alerts.length === 0" class="text-gray-500 text-center py-8">No wells currently require attention.</p>
+    </div>
+
+    <div *appHasRole="[role.ADMIN, role.PETROLEUM_ENGINEER]" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold mb-4">Alert Threshold Configuration</h2>
+      <form [formGroup]="thresholdForm" (ngSubmit)="saveThresholds()" class="space-y-3">
+        <div>
+          <label class="text-sm block mb-1">Max Water Cut (%)</label>
+          <input type="number" formControlName="maxWaterCutPercent" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Min Oil Production (bbl/d)</label>
+          <input type="number" formControlName="minOilProductionRate" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Min Injection Rate (bbl/d)</label>
+          <input type="number" formControlName="minInjectionRate" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Max Injection Pressure (psi)</label>
+          <input type="number" formControlName="maxInjectionPressure" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Production Decline (%)</label>
+          <input type="number" formControlName="productionDeclinePercent" class="w-full border rounded px-3 py-2" />
+        </div>
+        <button type="submit" [disabled]="isSavingThreshold" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+          Save Thresholds
+        </button>
+      </form>
+
+      <div class="mt-6 border-t pt-4" *ngIf="monitoringRules.length">
+        <h3 class="text-sm font-semibold mb-2">ZSK Monitoring Rules (Defaults)</h3>
+        <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-300">
+          <li *ngFor="let rule of monitoringRules">
+            <span class="font-mono">{{ rule.ruleCode }}</span>
+            — {{ rule.name }} ({{ rule.severity }}, {{ rule.defaultThresholdValue }})
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

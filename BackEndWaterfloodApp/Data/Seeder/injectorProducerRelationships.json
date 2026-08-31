@@ -1,0 +1,44 @@
+[
+  {
+    "Id": "b2000001-0000-0000-0000-000000000001",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000001",
+    "ProducerWellId": "a1000001-0000-0000-0000-000000000002",
+    "Distance": 0.4,
+    "RelationshipStatusCode": "ACT"
+  },
+  {
+    "Id": "b2000001-0000-0000-0000-000000000002",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000001",
+    "ProducerWellId": "a1000001-0000-0000-0000-000000000003",
+    "Distance": 0.8,
+    "RelationshipStatusCode": "ACT"
+  },
+  {
+    "Id": "b2000001-0000-0000-0000-000000000003",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000004",
+    "ProducerWellId": "a1000001-0000-0000-0000-000000000005",
+    "Distance": 0.5,
+    "RelationshipStatusCode": "ACT"
+  },
+  {
+    "Id": "b2000001-0000-0000-0000-000000000004",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000004",
+    "ProducerWellId": "a1000001-0000-0000-0000-000000000006",
+    "Distance": 0.9,
+    "RelationshipStatusCode": "ACT"
+  },
+  {
+    "Id": "b2000001-0000-0000-0000-000000000005",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000007",
+    "ProducerWellId": "a1000001-0000-0000-0000-000000000008",
+    "Distance": 0.6,
+    "RelationshipStatusCode": "ACT"
+  },
+  {
+    "Id": "b2000001-0000-0000-0000-000000000006",
+    "InjectorWellId": "a1000001-0000-0000-0000-000000000009",
+    "ProducerWellId": "a1000001-0000-0000-0000-00000000000a",
+    "Distance": 0.7,
+    "RelationshipStatusCode": "ACT"
+  }
+]

@@ -1,0 +1,170 @@
+<div class="relative">
+  <!-- Date Input Field -->
+  <div class="date-input-container" [class.disabled]="disabled" (click)="!disabled && toggleDatepicker($event)" tabindex="-1" [attr.aria-disabled]="disabled">
+    <div
+      class="date-input"
+      [ngClass]="{
+        'border-red-500': hasErrors && touched,
+        'opacity-50 cursor-not-allowed': disabled
+      }"
+    >
+      <svg
+        class="calendar-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span class="date-text">{{
+        displayValue || placeholder || (monthYearOnly ? ("DATE_PICKER.SELECT_MONTH_YEAR" | translate) : ("DATE_PICKER.SELECT_DATE" | translate))
+      }}</span>
+    </div>
+  </div>
+
+  <!-- Date Picker Dropdown -->
+  <div
+    *ngIf="showDatepicker"
+    class="datepicker-dropdown"
+    [class.disabled]="disabled"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Days View - Only shown when not in monthYearOnly mode -->
+    <div *ngIf="viewMode === 'days' && !monthYearOnly">
+      <!-- Month Navigation -->
+      <div class="datepicker-header">
+        <button type="button" class="nav-btn" (click)="prevMonth()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">←</span>
+          <span class="arrow" *ngIf="isRtl">→</span>
+        </button>
+
+        <div class="current-view" (click)="!disabled && switchToMonthView()">
+          {{ months[currentMonth.getMonth()] }} {{ currentMonth.getFullYear() }}
+        </div>
+
+        <button type="button" class="nav-btn" (click)="nextMonth()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">→</span>
+          <span class="arrow" *ngIf="isRtl">←</span>
+        </button>
+      </div>
+
+      <!-- Weekday Labels -->
+      <div class="weekday-row">
+        <div class="weekday" *ngFor="let day of weekdays">{{ day }}</div>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="calendar-grid">
+        <div class="week" *ngFor="let week of weeks">
+          <div
+            *ngFor="let day of week"
+            class="day"
+            [class.current-month]="day.isCurrentMonth"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class.selected]="day.isSelected"
+            [class.disabled]="disabled"
+            (click)="!disabled && selectDate(day)"
+          >
+            {{ day.day }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Month View -->
+    <div *ngIf="viewMode === 'months'">
+      <div class="datepicker-header">
+        <button type="button" class="nav-btn" (click)="prevYear()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">←</span>
+          <span class="arrow" *ngIf="isRtl">→</span>
+        </button>
+
+        <div class="current-view" (click)="!disabled && switchToYearView()">
+          {{ currentYear }}
+        </div>
+
+        <button type="button" class="nav-btn" (click)="nextYear()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">→</span>
+          <span class="arrow" *ngIf="isRtl">←</span>
+        </button>
+      </div>
+
+      <div class="month-grid">
+        <div
+          *ngFor="let month of months; let i = index"
+          class="month-item"
+          [class.selected]="i === currentMonthIndex && currentYear === (selectedDate?.getFullYear() || 0)"
+          [class.disabled]="isMonthDisabled(i) || disabled"
+          (click)="!disabled && !isMonthDisabled(i) && selectMonth(i)"
+        >
+          {{ month }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Year View -->
+    <div *ngIf="viewMode === 'years'">
+      <div class="datepicker-header">
+        <button type="button" class="nav-btn" (click)="prevDecade()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">←</span>
+          <span class="arrow" *ngIf="isRtl">→</span>
+        </button>
+
+        <div class="current-view">{{ decadeStart }}-{{ decadeStart + 9 }}</div>
+
+        <button type="button" class="nav-btn" (click)="nextDecade()" [disabled]="disabled">
+          <span class="arrow" *ngIf="!isRtl">→</span>
+          <span class="arrow" *ngIf="isRtl">←</span>
+        </button>
+      </div>
+
+      <div class="year-grid">
+        <div
+          *ngFor="let year of displayedYears"
+          class="year-item"
+          [class.selected]="year === currentYear"
+          [class.disabled]="isYearDisabled(year) || disabled"
+          (click)="!disabled && !isYearDisabled(year) && selectYear(year)"
+        >
+          {{ year }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="datepicker-footer">
+      <button type="button" class="today-btn btn-primary" (click)="setToday()" [disabled]="disabled">
+        {{ monthYearOnly ? ("DATE_PICKER.CURRENT_MONTH" | translate) : ("DATE_PICKER.TODAY" | translate) }}
+      </button>
+      <button
+        type="button"
+        class="clear-btn btn-secondary"
+        (click)="clearDate()"
+        [disabled]="disabled"
+      >
+        {{ "DATE_PICKER.CLEAR" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div
+    *ngIf="hasErrors && touched && required"
+    class="mt-1 text-sm text-red-600"
+  >
+    <span *ngIf="errorMessage">
+      {{ errorMessage | translate }}
+    </span>
+    <span *ngIf="!errorMessage">
+      {{ "VALIDATION.REQUIRED" | translate }}
+    </span>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+[
+  { "Code": "ACT", "Name": "Active", "Description": "Injector-producer relationship is active" },
+  { "Code": "INA", "Name": "Inactive", "Description": "Injector-producer relationship is inactive" }
+]

@@ -1,0 +1,104 @@
+<div class="p-6 space-y-4">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Waterflood Injector–Producer Relationships</h1>
+    <button *appHasRole="[role.ADMIN]" (click)="openCreateForm()" class="px-4 py-2 bg-blue-600 text-white rounded">Add Relationship</button>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-gray-800 rounded shadow p-4">
+      <h2 class="font-semibold mb-3">Injector Wells</h2>
+      <button
+        *ngFor="let inj of injectors"
+        (click)="selectInjector(inj.id)"
+        class="w-full text-left px-3 py-2 rounded mb-1 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+        [class.bg-blue-100]="selectedInjectorId === inj.id"
+      >
+        {{ inj.wellName }} <span class="text-xs text-gray-500">{{ inj.fieldName }}</span>
+      </button>
+    </div>
+
+    <div class="lg:col-span-2 space-y-4">
+      <div *ngIf="injectorDetail" class="bg-white dark:bg-gray-800 rounded shadow p-4">
+        <h2 class="font-semibold mb-2">{{ injectorDetail.injector.wellName }} — Linked Producers</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Injection: {{ injectorDetail.injector.injectionRate }} bbl/d ·
+          Pressure: {{ injectorDetail.injector.injectionPressure }} psi ·
+          Status: {{ injectorDetail.injector.wellStatusName }}
+        </p>
+
+        <table class="min-w-full text-sm mb-4">
+          <thead><tr class="border-b">
+            <th class="text-left py-2">Producer</th>
+            <th class="text-right py-2">Distance (km)</th>
+            <th class="text-right py-2">Oil (bbl/d)</th>
+            <th class="text-right py-2">Water Cut</th>
+            <th class="text-left py-2">Status</th>
+            <th *appHasRole="[role.ADMIN]" class="text-left py-2">Actions</th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let rel of injectorDetail.relationships" class="border-b">
+              <td class="py-2">{{ rel.producerWellName }}</td>
+              <td class="text-right py-2">{{ rel.distance }}</td>
+              <td class="text-right py-2">{{ getProducerOil(rel.producerWellId) }}</td>
+              <td class="text-right py-2">{{ getProducerWaterCut(rel.producerWellId) }}%</td>
+              <td class="py-2">{{ rel.relationshipStatusName }}</td>
+              <td *appHasRole="[role.ADMIN]" class="py-2 space-x-2">
+                <button (click)="openEditForm(rel)" class="text-blue-600 hover:underline">Edit</button>
+                <button (click)="deleteRelationship(rel.id)" class="text-red-600 hover:underline">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 class="font-semibold mt-4 mb-2">Current Producer Snapshot</h3>
+        <div echarts [options]="correlationChart" class="h-64"></div>
+        <h3 class="font-semibold mt-4 mb-2">Injector Water Injection Trend</h3>
+        <div echarts [options]="injectionTrendChart" class="h-56"></div>
+        <h3 class="font-semibold mt-4 mb-2">Producer Oil Production Trends</h3>
+        <div echarts [options]="producerOilChart" class="h-56"></div>
+        <h3 class="font-semibold mt-4 mb-2">Producer Water Cut Trends</h3>
+        <div echarts [options]="producerWaterCutChart" class="h-56"></div>
+      </div>
+
+      <div *ngIf="!injectorDetail" class="text-gray-500 text-center py-12">
+        Select an injector well to view linked producers and correlation charts.
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isFormVisible" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <form [formGroup]="relationshipForm" (ngSubmit)="submitRelationship()" class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">{{ isEditMode ? 'Edit' : 'Add' }} Relationship</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="text-sm">Injector Well</label>
+          <select formControlName="injectorWellId" class="w-full border rounded px-3 py-2">
+            <option value="">Select...</option>
+            <option *ngFor="let i of injectors" [value]="i.id">{{ i.wellName }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm">Producer Well</label>
+          <select formControlName="producerWellId" class="w-full border rounded px-3 py-2">
+            <option value="">Select...</option>
+            <option *ngFor="let p of producers" [value]="p.id">{{ p.wellName }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm">Distance (km)</label>
+          <input type="number" formControlName="distance" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-sm">Status</label>
+          <select formControlName="relationshipStatusCode" class="w-full border rounded px-3 py-2">
+            <option *ngFor="let s of zskReference?.relationshipStatuses" [value]="s.code">{{ s.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-4">
+        <button type="button" (click)="isFormVisible = false" class="px-4 py-2 border rounded">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

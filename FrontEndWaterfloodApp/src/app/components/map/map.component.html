@@ -1,0 +1,80 @@
+<div class="relative h-[calc(100vh-64px)]">
+  <form [formGroup]="filterForm" class="absolute top-4 left-4 z-[1000] bg-white dark:bg-gray-800 p-3 rounded shadow space-y-2 max-w-xl">
+    <div class="flex flex-wrap gap-2">
+      <select formControlName="fieldName" class="border rounded px-2 py-1 text-sm">
+        <option [ngValue]="null">All Waterflood Fields</option>
+        <option *ngFor="let f of fieldOptions" [value]="f.value">{{ f.label }}</option>
+      </select>
+      <select formControlName="wellTypeCode" class="border rounded px-2 py-1 text-sm">
+        <option [ngValue]="null">All Well Types</option>
+        <option *ngFor="let t of wellTypeOptions" [value]="t.value">{{ t.label }}</option>
+      </select>
+      <select formControlName="wellStatusCode" class="border rounded px-2 py-1 text-sm">
+        <option [ngValue]="null">All Statuses</option>
+        <option *ngFor="let s of wellStatusOptions" [value]="s.value">{{ s.label }}</option>
+      </select>
+      <input type="date" formControlName="fromDate" class="border rounded px-2 py-1 text-sm" title="From date" />
+      <input type="date" formControlName="toDate" class="border rounded px-2 py-1 text-sm" title="To date" />
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <input type="number" formControlName="minInjectionRate" placeholder="Inj ≥" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="maxInjectionRate" placeholder="Inj ≤" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="minOilProductionRate" placeholder="Oil ≥" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="maxOilProductionRate" placeholder="Oil ≤" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="minWaterCut" placeholder="WC ≥" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="maxWaterCut" placeholder="WC ≤" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="minInjectionPressure" placeholder="P ≥" class="w-20 border rounded px-2 py-1 text-sm" />
+      <input type="number" formControlName="maxInjectionPressure" placeholder="P ≤" class="w-20 border rounded px-2 py-1 text-sm" />
+    </div>
+  </form>
+
+  <div class="absolute top-4 right-4 z-[1000] bg-white dark:bg-gray-800 p-3 rounded shadow text-xs space-y-1" *ngIf="zskReference">
+    <div *ngFor="let s of zskReference.wellStatuses" class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-full" [style.background-color]="s.colorCode"></span> {{ s.name }}
+    </div>
+    <div class="border-t pt-1 mt-1">
+      <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full border-2 border-blue-700"></span> Injector (larger marker)</div>
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full border-2 border-green-700"></span> Producer (smaller marker)</div>
+      <div class="flex items-center gap-2"><span class="w-6 border-t-2 border-dashed border-gray-500"></span> Injector–producer link</div>
+    </div>
+    <button type="button" (click)="toggleConnectivity()" class="mt-1 w-full border rounded px-2 py-1">
+      {{ showConnectivity ? 'Hide' : 'Show' }} connectivity
+    </button>
+  </div>
+
+  <div #mapContainer class="w-full h-full z-0"></div>
+
+  <div *ngIf="selectedWell" class="absolute top-0 right-0 w-80 h-full bg-white dark:bg-gray-800 shadow-lg z-[1001] p-4 overflow-y-auto">
+    <button (click)="closeDrawer()" class="float-right text-gray-500 hover:text-gray-700">&times;</button>
+    <h2 class="text-xl font-bold mb-2">{{ selectedWell.wellName }}</h2>
+    <span class="text-xs px-2 py-0.5 rounded text-white" [style.background-color]="selectedWell.wellTypeCode === 'INJ' ? '#1565C0' : '#2E7D32'">
+      {{ selectedWell.wellTypeName }}
+    </span>
+    <span class="text-xs px-2 py-0.5 rounded text-white ml-1" [style.background-color]="selectedWell.statusColorCode">
+      {{ selectedWell.wellStatusName }}
+    </span>
+
+    <div class="mt-4 space-y-2 text-sm">
+      <p><strong>Waterflood Field:</strong> {{ selectedWell.fieldName }}</p>
+      <p><strong>Coordinates:</strong> {{ selectedWell.latitude }}, {{ selectedWell.longitude }}</p>
+      <p *ngIf="selectedWell.injectionRate"><strong>Injection Rate:</strong> {{ selectedWell.injectionRate }} bbl/d</p>
+      <p *ngIf="selectedWell.injectionPressure"><strong>Injection Pressure:</strong> {{ selectedWell.injectionPressure }} psi</p>
+      <p *ngIf="selectedWell.oilProductionRate"><strong>Oil Production:</strong> {{ selectedWell.oilProductionRate }} bbl/d</p>
+      <p *ngIf="selectedWell.waterProductionRate"><strong>Water Production:</strong> {{ selectedWell.waterProductionRate }} bbl/d</p>
+      <p *ngIf="selectedWell.waterCut != null"><strong>Water Cut:</strong> {{ selectedWell.waterCut }}%</p>
+      <p><strong>Measurement Date:</strong> {{ selectedWell.measurementDate | date:'mediumDate' }}</p>
+      <div *ngIf="selectedWell.requiresAttention" class="mt-2 p-2 bg-red-50 rounded text-red-700">
+        <strong>Requires Attention</strong>
+        <ul class="list-disc list-inside mt-1">
+          <li *ngFor="let a of selectedWell.alerts">
+            <span class="font-mono text-xs">{{ a.ruleIdentifier }}</span>: {{ a.message }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="wellHistory.length" class="mt-4">
+        <h3 class="font-semibold mb-1">Historical Performance</h3>
+        <div echarts [options]="historyChart" class="h-48"></div>
+      </div>
+    </div>
+  </div>
+</div>

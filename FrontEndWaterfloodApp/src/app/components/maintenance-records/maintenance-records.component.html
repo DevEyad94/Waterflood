@@ -1,0 +1,297 @@
+<div class="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+  <div class="mb-6 flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Maintenance Records</h1>
+      <p class="mt-1 text-gray-600 dark:text-gray-300">Manage gas field maintenance records</p>
+    </div>
+    <div>
+      <button
+        (click)="toggleForm()"
+        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+      >
+        {{ isFormVisible ? 'Cancel' : 'Add New Maintenance' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div *ngIf="isFormVisible" class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+      {{ isEditMode ? 'Edit Maintenance Record' : 'Add Maintenance Record' }}
+    </h2>
+
+    <form [formGroup]="recordForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <input type="hidden" formControlName="fieldMaintenanceGuid">
+
+      <div>
+        <app-label [label]="'Maintenance Date'" [required]="true"></app-label>
+        <app-date-picker
+          [placeholder]="'Select date'"
+          [required]="true"
+          [errorMessage]="'Date is required'"
+          [monthYearOnly]="true"
+          [disabledDates]="disabledMonths"
+          formControlName="fieldMaintenanceDate"
+        ></app-date-picker>
+      </div>
+
+      <div>
+        <app-zsk-select
+          [label]="'Maintenance Type'"
+          [required]="true"
+          [placeholder]="'Select maintenance type'"
+          [options]="getMaintenanceTypeOptions()"
+          formControlName="zMaintenanceTypeId"
+          [id]="'maintenance-type'"
+          [name]="'maintenance-type'"
+        ></app-zsk-select>
+      </div>
+
+      <div>
+        <app-zsk-select
+          [label]="'Field'"
+          [required]="true"
+          [placeholder]="'Select field'"
+          [options]="getFieldOptions()"
+          formControlName="zFieldId"
+          [id]="'field'"
+          [name]="'field'"
+        ></app-zsk-select>
+      </div>
+
+      <div>
+        <app-text-input
+          [label]="'Cost'"
+          [required]="true"
+          [type]="'number'"
+          [placeholder]="'Enter cost'"
+          formControlName="cost"
+          [id]="'cost'"
+          [name]="'cost'"
+          [errorMessage]="'Cost is required'"
+        ></app-text-input>
+      </div>
+
+      <div class="md:col-span-2">
+        <app-text-area
+          [label]="'Description'"
+          [required]="true"
+          [placeholder]="'Enter description'"
+          formControlName="description"
+          [id]="'description'"
+          [name]="'description'"
+          [rows]="4"
+          [errorMessage]="'Description is required'"
+        ></app-text-area>
+      </div>
+
+      <div class="md:col-span-2 flex justify-end">
+        <button
+          type="button"
+          (click)="toggleForm()"
+          class="mr-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="recordForm.invalid || isSubmitting"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow mb-6">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Filter Records</h2>
+
+    <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
+      <div>
+        <app-text-input
+          [label]="'Search'"
+          [placeholder]="'Search...'"
+          formControlName="search"
+        ></app-text-input>
+      </div>
+
+      <div>
+        <app-zsk-select
+          [label]="'Field'"
+          [placeholder]="'All fields'"
+          [options]="getFieldOptions()"
+          formControlName="zFieldId"
+        ></app-zsk-select>
+      </div>
+
+      <div>
+        <app-zsk-select
+          [label]="'Maintenance Type'"
+          [placeholder]="'All types'"
+          [options]="getMaintenanceTypeOptions()"
+          formControlName="zMaintenanceTypeId"
+        ></app-zsk-select>
+      </div>
+
+      <div>
+        <app-label [label]="'Start Date'" [required]="true"></app-label>
+        <app-date-picker
+          [placeholder]="'Select start date'"
+          [monthYearOnly]="true"
+          formControlName="startDate"
+        ></app-date-picker>
+      </div>
+
+      <div>
+        <app-label [label]="'End Date'" [required]="true"></app-label>
+        <app-date-picker
+          [placeholder]="'Select end date'"
+          [monthYearOnly]="true"
+          formControlName="endDate"
+        ></app-date-picker>
+      </div>
+
+      <div>
+        <app-text-input
+          [label]="'Min Cost'"
+          [type]="'number'"
+          [placeholder]="'Min'"
+          formControlName="minCost"
+        ></app-text-input>
+      </div>
+
+      <div>
+        <app-text-input
+          [label]="'Max Cost'"
+          [type]="'number'"
+          [placeholder]="'Max'"
+          formControlName="maxCost"
+        ></app-text-input>
+      </div>
+    </form>
+  </div>
+
+  <!-- Records Table -->
+  <div class="bg-white dark:bg-gray-700 rounded-lg shadow overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" (click)="onSort('fieldMaintenanceDate')">
+              Date
+              <span *ngIf="sortColumn === 'fieldMaintenanceDate'" class="ml-1">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" (click)="onSort('fieldName')">
+              Field
+              <span *ngIf="sortColumn === 'fieldName'" class="ml-1">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" (click)="onSort('maintenanceTypeName')">
+              Type
+              <span *ngIf="sortColumn === 'maintenanceTypeName'" class="ml-1">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" (click)="onSort('cost')">
+              Cost
+              <span *ngIf="sortColumn === 'cost'" class="ml-1">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Description
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+          <tr *ngIf="isLoading" class="animate-pulse">
+            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500 dark:text-gray-300">
+              Loading...
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && (!maintenanceRecords || maintenanceRecords.length === 0)" class="hover:bg-gray-100 dark:hover:bg-gray-600">
+            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500 dark:text-gray-300">
+              No records found
+            </td>
+          </tr>
+          <tr *ngFor="let record of maintenanceRecords" class="hover:bg-gray-100 dark:hover:bg-gray-600">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              {{ record.fieldMaintenanceDate | date:'MMMM, yyyy' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+              {{ record.fieldName }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              {{ record.maintenanceTypeName }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              ${{ record.cost | number:'1.2-2' }}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 max-w-xs truncate">
+              {{ record.description }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-right space-x-1">
+              <button
+                (click)="editRecord(record)"
+                class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Edit
+              </button>
+              <button
+                (click)="deleteRecord(record)"
+                *appHasRole="[roleEnum.ADMIN]"
+                class="px-3 py-1.5 text-xs bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-6 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-600">
+      <div class="text-sm text-gray-700 dark:text-gray-300">
+        Showing <span class="font-medium">{{ (pagination.currentPage - 1) * pagination.itemsPerPage + 1 }}</span> to
+        <span class="font-medium">{{ Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems) }}</span> of
+        <span class="font-medium">{{ pagination.totalItems }}</span> results
+      </div>
+      <div class="flex space-x-2">
+        <button
+          (click)="onPageChange(pagination.currentPage - 1)"
+          [disabled]="pagination.currentPage === 1"
+          class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <button
+          (click)="onPageChange(pagination.currentPage + 1)"
+          [disabled]="pagination.currentPage === pagination.totalPages"
+          class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <app-confirm-dialog
+    [visible]="showDeleteConfirmation"
+    [title]="'Confirm Delete'"
+    [message]="recordToDelete ? 'Are you sure you want to delete this maintenance record for ' + recordToDelete.fieldName + '?' : 'Are you sure you want to delete this record?'"
+    [confirmText]="'Delete'"
+    [cancelText]="'Cancel'"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+  ></app-confirm-dialog>
+</div>

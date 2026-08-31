@@ -1,0 +1,50 @@
+<!--
+  Available Angular form validation error types:
+  - required: Field is mandatory
+  - minlength: Text is shorter than required minimum length
+  - maxlength: Text exceeds maximum allowed length
+  - pattern: Text doesn't match required pattern
+
+  Usage example:
+  <app-text-area
+    formControlName="description"
+    [label]="'Description'"
+    [rows]="4"
+    [required]="true"
+    [formControl]="form.get('description')"
+    [showError]="submitted && !!form.get('description')?.errors"
+  ></app-text-area>
+-->
+
+<div class="relative">
+  <!-- Text Area Label -->
+  <app-label [label]="label" [required]="required" [for]="id"></app-label>
+
+  <!-- Text Area Container -->
+  <div class="textarea-container">
+    <div class="text-area">
+      <textarea
+        [id]="id"
+        [name]="name"
+        [rows]="rows"
+        [cols]="cols"
+        [maxlength]="maxLength"
+        [placeholder]="placeholder | translate"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-pdo-green focus:border-pdo-green dark:bg-gray-700 dark:text-white"
+        [ngClass]="{
+          'border-red-500': hasErrors && touched
+        }"
+        [(ngModel)]="value"
+        (input)="onTextareaChange($event)"
+        (blur)="onTouched()"
+        [disabled]="disabled"
+        [attr.required]="required"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="hasErrors && touched && errorMessage" class="mt-1 text-sm text-red-600">
+    {{ errorMessage | translate }}
+  </div>
+</div>
